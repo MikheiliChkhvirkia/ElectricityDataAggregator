@@ -1,5 +1,6 @@
 ﻿using ElectricityDataAggregator.Application.Infrastructure.Persistance;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
@@ -8,94 +9,46 @@ namespace ElectricityDataAggregator.Application.AggregateDatas.Query
 {
     public class GetAggregatedDataQueryHandler : IRequestHandler<GetAggregatedDataQuery, GetAggregatedDataQueryResponse>
     {
-        private static readonly HttpClient httpClient = new HttpClient();
         private readonly IElectricityDbContext db;
+        private readonly IConfiguration configuration;
+        private readonly Stopwatch stopwatch = Stopwatch.StartNew();
 
-        public GetAggregatedDataQueryHandler(IElectricityDbContext db)
+        public GetAggregatedDataQueryHandler(IElectricityDbContext db, IConfiguration configuration)
         {
             this.db = db;
+            this.configuration = configuration;
         }
 
         public async Task<GetAggregatedDataQueryResponse> Handle(GetAggregatedDataQuery request, CancellationToken cancellationToken)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            var urls = new List<string>
-            {
-                "https://data.gov.lt/dataset/1975/download/10766/2022-05.csv",
-                "https://data.gov.lt/dataset/1975/download/10765/2022-04.csv",
-                "https://data.gov.lt/dataset/1975/download/10764/2022-03.csv",
-                "https://data.gov.lt/dataset/1975/download/10763/2022-02.csv"
-            };
 
             var aggregatedData = new ConcurrentDictionary<string, (double PPlus, double PMinus)>();
+            var rootPath = GetRootPath(); // Get the root path for CSV files
+            var csvFilePaths = GetCsvFilePaths(rootPath); // Get the file paths of the CSV files
 
-            await Task.WhenAll(urls.Select(url => ProcessCsvData(url, aggregatedData)));
+            await ProcessCsvData(csvFilePaths, aggregatedData); // Process the CSV files
 
-            await StoreAggregatedDataInDatabase(aggregatedData, cancellationToken);
+            await StoreAggregatedDataInDatabase(aggregatedData, cancellationToken); // Store the aggregated data in the database
 
-            var response = new GetAggregatedDataQueryResponse
+            stopwatch.Stop();
+
+            return new GetAggregatedDataQueryResponse
             {
                 Data = aggregatedData.Select(entry => new AggregatedData
                 {
                     Region = entry.Key,
                     PPlusSum = entry.Value.PPlus,
                     PMinusSum = entry.Value.PMinus
-                }).ToList()
+                }).ToList(),
+                EstimateTime = stopwatch.Elapsed, //Stopwatch timer
+                MemoryUsed = FormatBytes(Process.GetCurrentProcess().WorkingSet64) //Get Memory and convert into readable format
             };
-
-            stopwatch.Stop();
-            response.EstimateTime = stopwatch.Elapsed;
-
-            return response;
         }
 
-        private static async Task ProcessCsvData(string url, ConcurrentDictionary<string, (double PPlus, double PMinus)> aggregatedData)
-        {
-            using var responseStream = await httpClient.GetStreamAsync(url);
-            using var reader = new StreamReader(responseStream);
-
-            // Skip the header row
-            await reader.ReadLineAsync();
-
-            string line;
-            while ((line = await reader.ReadLineAsync()) != null)
-            {
-                var values = line.Split(',');
-
-                var obtPavadinimas = values[1];
-
-                if (obtPavadinimas.Equals("Butas"))
-                {
-                    var entry = new ElectricityDataEntry
-                    {
-                        Tinklas = values[0],
-                        ObtPavadinimas = obtPavadinimas,
-                        ObjGvTipas = values[2],
-                        ObjNumeris = values[3],
-                        PPlus = ParseDoubleOrDefault(values[4]),
-                        PlT = values[5],
-                        PMinus = ParseDoubleOrDefault(values[6])
-                    };
-
-                    aggregatedData.AddOrUpdate(
-                        entry.Tinklas,
-                        (entry.PPlus, entry.PMinus),
-                        (_, existingEntry) => (existingEntry.PPlus + entry.PPlus, existingEntry.PMinus + entry.PMinus)
-                    );
-                }
-            }
-        }
-
-        private static double ParseDoubleOrDefault(string value)
-        {
-            if (double.TryParse(value?.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var result))
-            {
-                return result;
-            }
-
-            // Parsing failed or value is null. Using default value
-            return default;
-        }
+        #region Private
+        private string GetRootPath()
+            => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configuration["CsvFilePathFormat"])
+            .Replace("\\bin\\Debug\\net6.0", "");
 
         private async Task StoreAggregatedDataInDatabase(ConcurrentDictionary<string, (double PPlus, double PMinus)> aggregatedData, CancellationToken cancellationToken)
         {
@@ -109,5 +62,86 @@ namespace ElectricityDataAggregator.Application.AggregateDatas.Query
             await db.AggregatedDatas.AddRangeAsync(records, cancellationToken);
             await db.SaveChangesAsync(cancellationToken);
         }
+
+        #region Statics
+        private static string FormatBytes(long bytes)
+        {
+            const int scale = 1024;
+            string[] sizeTextArr = { "TB", "GB", "MB", "KB", "Bytes" };
+            long max = (long)Math.Pow(scale, sizeTextArr.Length - 1);
+
+            foreach (string size in sizeTextArr)
+            {
+                if (bytes > max)
+                    return $"{bytes / max} {size}";
+
+                max /= scale;
+            }
+
+            return "0 Bytes";
+        }
+
+        // Generate the file paths of the CSV files for the desired months
+        private static List<string> GetCsvFilePaths(string rootPath)
+            => Enumerable.Range(2, 4)
+               .Select(month => string.Format(rootPath, (month < 10) ? $"0{month}" : month.ToString()))
+               .ToList();
+
+
+        private static async Task ProcessCsvData(List<string> filePaths, ConcurrentDictionary<string, (double PPlus, double PMinus)> aggregatedData)
+        {
+            var tasks = new List<Task>();
+
+            foreach (var filePath in filePaths)
+            {
+                tasks.Add(Task.Run(async () =>
+                {
+                    using var reader = new StreamReader(filePath);
+
+                    // Skip the header row
+                    await reader.ReadLineAsync();
+
+                    string line;
+                    while ((line = await reader.ReadLineAsync()) != null)
+                    {
+                        var values = line.Split(',');
+
+                        var obtPavadinimas = values[1];
+
+                        if (obtPavadinimas.Equals("Butas"))
+                        {
+                            var entry = new ElectricityDataEntry
+                            {
+                                Tinklas = values[0],
+                                ObtPavadinimas = obtPavadinimas,
+                                ObjGvTipas = values[2],
+                                ObjNumeris = values[3],
+                                PPlus = ParseDoubleOrDefault(values[4]),
+                                PlT = values[5],
+                                PMinus = ParseDoubleOrDefault(values[6])
+                            };
+
+                            aggregatedData.AddOrUpdate(
+                                entry.Tinklas,
+                                (entry.PPlus, entry.PMinus),
+                                (_, existingEntry) => (existingEntry.PPlus + entry.PPlus, existingEntry.PMinus + entry.PMinus)
+                            );
+                        }
+                    }
+                }));
+            }
+            // wait until all tasks are finished
+            await Task.WhenAll(tasks);
+        }
+
+        //Get Parsed value or return default
+        private static double ParseDoubleOrDefault(string value)
+            => double.TryParse(value?.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var result)
+                ? result
+                : default;
+
+        #endregion
+
+        #endregion
     }
 }

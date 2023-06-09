@@ -10,6 +10,7 @@ namespace ElectricityDataAggregator.Application.AggregateDatas.Query
     {
         public List<AggregatedData> Data { get; set; }
         public TimeSpan EstimateTime { get; set; }
+        public string MemoryUsed { get; set; } 
     }
 
     public class AggregatedData 

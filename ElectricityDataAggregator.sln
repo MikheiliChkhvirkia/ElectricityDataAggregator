@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectricityDataAggregator.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElectricityDataAggregator.Common.Persistance", "ElectricityDataAggregator.Common.Persistance\ElectricityDataAggregator.Common.Persistance.csproj", "{EF05B7E0-38BC-4CBB-9F94-B6B95B31E5C5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{68C21BF2-9929-4970-AD2C-C7DA8EA2E69B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
