@@ -1,4 +1,5 @@
 ﻿using ElectricityDataAggregator.Application.Infrastructure.Persistance;
+using ElectricityDataAggregator.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Concurrent;
@@ -31,17 +32,18 @@ namespace ElectricityDataAggregator.Application.AggregateDatas.Query
             await StoreAggregatedDataInDatabase(aggregatedData, cancellationToken); // Store the aggregated data in the database
 
             stopwatch.Stop();
+            
+            Console.WriteLine($"Estimate Time {stopwatch.Elapsed}"); // Stopwatch timer
+            Console.WriteLine($"Alocated Memory {FormatBytes(Process.GetCurrentProcess().WorkingSet64)}"); // Get Memory and convert into readable format
 
             return new GetAggregatedDataQueryResponse
             {
-                Data = aggregatedData.Select(entry => new AggregatedData
+                Data = aggregatedData.Select(entry => new AggregatedDataModel
                 {
                     Region = entry.Key,
                     PPlusSum = entry.Value.PPlus,
                     PMinusSum = entry.Value.PMinus
                 }).ToList(),
-                EstimateTime = stopwatch.Elapsed, //Stopwatch timer
-                MemoryUsed = FormatBytes(Process.GetCurrentProcess().WorkingSet64) //Get Memory and convert into readable format
             };
         }
 
@@ -52,7 +54,7 @@ namespace ElectricityDataAggregator.Application.AggregateDatas.Query
 
         private async Task StoreAggregatedDataInDatabase(ConcurrentDictionary<string, (double PPlus, double PMinus)> aggregatedData, CancellationToken cancellationToken)
         {
-            var records = aggregatedData.Select(entry => new Domain.Entities.AggregatedData
+            var records = aggregatedData.Select(entry => new AggregatedData
             {
                 Region = entry.Key,
                 PPlusSum = entry.Value.PPlus,
@@ -96,6 +98,9 @@ namespace ElectricityDataAggregator.Application.AggregateDatas.Query
             {
                 tasks.Add(Task.Run(async () =>
                 {
+                    if (!File.Exists(filePath))
+                        throw new FileNotFoundException($"The file '{filePath}' does not exist.");
+                    
                     using var reader = new StreamReader(filePath);
 
                     // Skip the header row

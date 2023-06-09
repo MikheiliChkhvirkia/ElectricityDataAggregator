@@ -8,12 +8,10 @@ namespace ElectricityDataAggregator.Application.AggregateDatas.Query
 
     public class GetAggregatedDataQueryResponse
     {
-        public List<AggregatedData> Data { get; set; }
-        public TimeSpan EstimateTime { get; set; }
-        public string MemoryUsed { get; set; } 
+        public List<AggregatedDataModel> Data { get; set; }
     }
 
-    public class AggregatedData 
+    public class AggregatedDataModel 
     {
         public string Region { get; set; }
         public double PPlusSum { get; set; }
