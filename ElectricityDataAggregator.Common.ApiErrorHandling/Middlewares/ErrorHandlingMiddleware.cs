@@ -4,7 +4,9 @@ using ElectricityDataAggregator.Common.ApiErrorHandling.Models;
 using ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Builders;
 using ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Options;
 using Serilog.Context;
+using System;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace ElectricityDataAggregator.Common.ApiErrorHandling.Middlewares
 {
@@ -73,6 +75,11 @@ namespace ElectricityDataAggregator.Common.ApiErrorHandling.Middlewares
             }
             else
             {
+                _logger.Log(ctx.Logging.LogLevel, ctx.Exception,
+                    "Api {LogLevel} occurred. TraceId: {TraceId}, Code: {Code}, Title: {Title}, Detail: {Detail}",
+                    ctx.Logging.LogLevel, ctx.ProblemDetails.TraceId,
+                    ctx.ProblemDetails.Code, ctx.ProblemDetails.Title, ctx.ProblemDetails.Detail);
+
                 LogContext.PushProperty(Convert.ToString(ctx.Logging.LogLevel),
                     string.Format("\nApi {0} Occurred, \nTraceId: {1}, \nCode: {2}, \nTitle: {3}, \nDetail: {4}\n",
                     Convert.ToString(ctx.Logging.LogLevel), ctx.ProblemDetails.TraceId,

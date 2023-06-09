@@ -16,7 +16,8 @@ namespace ElectricityDataAggregator.Common.API.ErrorHandling
     public class ExceptionHandler : IExceptionHandler<Exception>,
          IExceptionHandler<AppException>,
          IExceptionHandler<HttpException>,
-         IExceptionHandler<ObjectNotFoundException>
+         IExceptionHandler<ObjectNotFoundException>,
+         IExceptionHandler<FileIsNotFoundException>
     {
         private static readonly ApiProblemDetailsConverter apiProblemDetailsConverter = new();
         public void Handle(ApiProblemContext<Exception> ctx)
@@ -59,6 +60,16 @@ namespace ElectricityDataAggregator.Common.API.ErrorHandling
         public void Handle(ApiProblemContext<ObjectNotFoundException> ctx)
         {
             ctx.ProblemDetails.Type = "ObjectNotFoundException";
+            ctx.ProblemDetails.Title = ctx.Exception.Title;
+            ctx.ProblemDetails.Status = StatusCodes.Status404NotFound;
+            ctx.ProblemDetails.Detail = ctx.Exception.Message;
+            ctx.ProblemDetails.Code = ctx.Exception.Code;
+            ctx.Logging.LogLevel = LogLevel.Error;
+        }
+
+        public void Handle(ApiProblemContext<FileIsNotFoundException> ctx)
+        {
+            ctx.ProblemDetails.Type = "FileNotFoundException";
             ctx.ProblemDetails.Title = ctx.Exception.Title;
             ctx.ProblemDetails.Status = StatusCodes.Status404NotFound;
             ctx.ProblemDetails.Detail = ctx.Exception.Message;

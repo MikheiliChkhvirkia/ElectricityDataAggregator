@@ -1,7 +1,9 @@
 ﻿using ElectricityDataAggregator.Application.Infrastructure.Persistance;
+using ElectricityDataAggregator.Common.Exceptions;
 using ElectricityDataAggregator.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
@@ -22,7 +24,6 @@ namespace ElectricityDataAggregator.Application.AggregateDatas.Query
 
         public async Task<GetAggregatedDataQueryResponse> Handle(GetAggregatedDataQuery request, CancellationToken cancellationToken)
         {
-
             var aggregatedData = new ConcurrentDictionary<string, (double PPlus, double PMinus)>();
             var rootPath = GetRootPath(); // Get the root path for CSV files
             var csvFilePaths = GetCsvFilePaths(rootPath); // Get the file paths of the CSV files
@@ -32,7 +33,7 @@ namespace ElectricityDataAggregator.Application.AggregateDatas.Query
             await StoreAggregatedDataInDatabase(aggregatedData, cancellationToken); // Store the aggregated data in the database
 
             stopwatch.Stop();
-            
+
             Console.WriteLine($"Estimate Time {stopwatch.Elapsed}"); // Stopwatch timer
             Console.WriteLine($"Alocated Memory {FormatBytes(Process.GetCurrentProcess().WorkingSet64)}"); // Get Memory and convert into readable format
 
@@ -99,7 +100,8 @@ namespace ElectricityDataAggregator.Application.AggregateDatas.Query
                 tasks.Add(Task.Run(async () =>
                 {
                     if (!File.Exists(filePath))
-                        throw new FileNotFoundException($"The file '{filePath}' does not exist.");
+                        throw new FileIsNotFoundException($"The file '{filePath}' does not exist."); // Throw first exception
+                    
                     
                     using var reader = new StreamReader(filePath);
 
