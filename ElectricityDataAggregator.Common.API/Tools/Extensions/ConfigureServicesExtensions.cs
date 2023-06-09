@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using ElectricityDataAggregator.Common.API.Swagger;
+using ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Extensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
-using ElectricityDataAggregator.Common.API.Swagger;
-using ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Extensions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 

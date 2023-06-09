@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using ElectricityDataAggregator.Common.ApiErrorHandling.Models;
+﻿using ElectricityDataAggregator.Common.ApiErrorHandling.Models;
 using ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Builders;
 using ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Options;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Serilog.Context;
-using System;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace ElectricityDataAggregator.Common.ApiErrorHandling.Middlewares
 {

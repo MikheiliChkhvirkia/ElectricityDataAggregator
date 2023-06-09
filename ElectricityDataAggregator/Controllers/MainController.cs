@@ -3,7 +3,6 @@ using ElectricityDataAggregator.Common.API.Controllers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Reflection;
 
 namespace ElectricityDataAggregator.API.Controllers
 {

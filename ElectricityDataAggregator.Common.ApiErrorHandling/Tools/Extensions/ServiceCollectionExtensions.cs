@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Factories;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Factories;
 
 namespace ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Extensions
 {

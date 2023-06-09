@@ -3,7 +3,6 @@ using ElectricityDataAggregator.Common.Exceptions;
 using ElectricityDataAggregator.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using Serilog;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
@@ -101,8 +100,8 @@ namespace ElectricityDataAggregator.Application.AggregateDatas.Query
                 {
                     if (!File.Exists(filePath))
                         throw new FileIsNotFoundException($"The file '{filePath}' does not exist."); // Throw first exception
-                    
-                    
+
+
                     using var reader = new StreamReader(filePath);
 
                     // Skip the header row

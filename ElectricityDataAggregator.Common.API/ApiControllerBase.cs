@@ -1,7 +1,7 @@
-﻿using MediatR;
+﻿using ElectricityDataAggregator.Common.ApiErrorHandling.Models;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ElectricityDataAggregator.Common.ApiErrorHandling.Models;
 
 namespace ElectricityDataAggregator.Common.API.Controllers
 {

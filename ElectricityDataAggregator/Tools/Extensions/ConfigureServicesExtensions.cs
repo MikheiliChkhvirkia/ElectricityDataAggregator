@@ -1,11 +1,8 @@
 ﻿using ElectricityDataAggregator.Application.Tools.Extensions;
 using ElectricityDataAggregator.Common.API.Tools.Extensions;
 using ElectricityDataAggregator.Persistence.Tools.Extensions;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Reflection;
-using System.Text;
 
 namespace ElectricityDataAggregator.API.Tools.Extensions
 {

@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using ElectricityDataAggregator.Common.ApiErrorHandling.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using ElectricityDataAggregator.Common.ApiErrorHandling.Models;
 using System.Reflection;
 
 namespace ElectricityDataAggregator.Common.ApiErrorHandling.Tools.JsonConverters.NetwonsoftJson

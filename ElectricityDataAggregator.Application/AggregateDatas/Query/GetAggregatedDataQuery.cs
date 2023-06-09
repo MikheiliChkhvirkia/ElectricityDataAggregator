@@ -1,5 +1,4 @@
-﻿using ElectricityDataAggregator.Domain.Entities;
-using MediatR;
+﻿using MediatR;
 
 namespace ElectricityDataAggregator.Application.AggregateDatas.Query
 {
@@ -11,7 +10,7 @@ namespace ElectricityDataAggregator.Application.AggregateDatas.Query
         public List<AggregatedDataModel> Data { get; set; }
     }
 
-    public class AggregatedDataModel 
+    public class AggregatedDataModel
     {
         public string Region { get; set; }
         public double PPlusSum { get; set; }

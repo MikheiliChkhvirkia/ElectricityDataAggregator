@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using ElectricityDataAggregator.Common.ApiErrorHandling.Models;
+﻿using ElectricityDataAggregator.Common.ApiErrorHandling.Models;
+using Newtonsoft.Json;
 
 namespace ElectricityDataAggregator.Common.ApiErrorHandling.Tools.JsonConverters.NetwonsoftJson
 {

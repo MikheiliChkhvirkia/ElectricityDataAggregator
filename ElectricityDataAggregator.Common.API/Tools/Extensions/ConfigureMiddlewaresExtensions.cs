@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using ElectricityDataAggregator.Common.API.Tools.Constants;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
-using ElectricityDataAggregator.Common.API.Tools.Constants;
 using System.Reflection;
 
 namespace ElectricityDataAggregator.Common.API.Tools.Extensions

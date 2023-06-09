@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
-using ElectricityDataAggregator.Common.ApiErrorHandling.Middlewares;
+﻿using ElectricityDataAggregator.Common.ApiErrorHandling.Middlewares;
 using ElectricityDataAggregator.Common.ApiErrorHandling.Models;
 using ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Builders;
 using ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Options;
+using Microsoft.AspNetCore.Builder;
 
 namespace ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Extensions
 {

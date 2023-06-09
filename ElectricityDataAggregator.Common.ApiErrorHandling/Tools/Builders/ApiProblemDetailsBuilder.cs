@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using ElectricityDataAggregator.Common.ApiErrorHandling.Contracts;
+﻿using ElectricityDataAggregator.Common.ApiErrorHandling.Contracts;
 using ElectricityDataAggregator.Common.ApiErrorHandling.Models;
 using ElectricityDataAggregator.Common.ApiErrorHandling.Models.ErrorCodes;
 using ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Helpers;
 using ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Options;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;

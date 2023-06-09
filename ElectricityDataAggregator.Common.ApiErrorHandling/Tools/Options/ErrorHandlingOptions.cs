@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using ElectricityDataAggregator.Common.ApiErrorHandling.Models;
+﻿using ElectricityDataAggregator.Common.ApiErrorHandling.Models;
+using Microsoft.Extensions.Logging;
 
 namespace ElectricityDataAggregator.Common.ApiErrorHandling.Tools.Options
 {

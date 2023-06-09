@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using ElectricityDataAggregator.Common.API.Tools.Constants;
+﻿using ElectricityDataAggregator.Common.API.Tools.Constants;
+using Microsoft.AspNetCore.Http;
 
 namespace ElectricityDataAggregator.Common.API.Tools.Extensions
 {
